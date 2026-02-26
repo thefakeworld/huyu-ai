@@ -29,10 +29,16 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Remove API routes for static export
+        run: rm -rf src/app/api
+
       - name: Build
         env:
           GITHUB_PAGES: 'true'
         run: bun run build
+
+      - name: Add .nojekyll
+        run: touch out/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
