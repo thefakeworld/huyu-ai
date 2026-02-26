@@ -1,13 +1,23 @@
+/**
+ * WebSocket Chat Room Service
+ * 
+ * A real-time chat service built with Socket.io
+ * Provides: user join/leave notifications, message broadcasting, online user list
+ * 
+ * Port: 3003
+ */
+
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 
+const PORT = process.env.WS_PORT || 3003
+
 const httpServer = createServer()
 const io = new Server(httpServer, {
-  // DO NOT change the path, it is used by Caddy to forward the request to the correct port
   path: '/',
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
+    origin: '*',
+    methods: ['GET', 'POST']
   },
   pingTimeout: 60000,
   pingInterval: 25000,
@@ -47,92 +57,87 @@ const createUserMessage = (username: string, content: string): Message => ({
 })
 
 io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`)
+  console.log(`[${new Date().toISOString()}] User connected: ${socket.id}`)
 
-  // Add test event handler
+  // Test event handler
   socket.on('test', (data) => {
     console.log('Received test message:', data)
-    socket.emit('test-response', { 
-      message: 'Server received test message', 
+    socket.emit('test-response', {
+      message: 'Server received test message',
       data: data,
       timestamp: new Date().toISOString()
     })
   })
 
+  // User join event
   socket.on('join', (data: { username: string }) => {
     const { username } = data
-    
-    // Create user object
+
     const user: User = {
       id: socket.id,
       username
     }
-    
-    // Add to user list
+
     users.set(socket.id, user)
-    
-    // Send join message to all users
+
     const joinMessage = createSystemMessage(`${username} joined the chat room`)
     io.emit('user-joined', { user, message: joinMessage })
-    
-    // Send current user list to new user
+
     const usersList = Array.from(users.values())
     socket.emit('users-list', { users: usersList })
-    
-    console.log(`${username} joined the chat room, current online users: ${users.size}`)
+
+    console.log(`[${new Date().toISOString()}] ${username} joined, online users: ${users.size}`)
   })
 
+  // Message event
   socket.on('message', (data: { content: string; username: string }) => {
     const { content, username } = data
     const user = users.get(socket.id)
-    
+
     if (user && user.username === username) {
       const message = createUserMessage(username, content)
       io.emit('message', message)
-      console.log(`${username}: ${content}`)
+      console.log(`[${new Date().toISOString()}] ${username}: ${content}`)
     }
   })
 
+  // Disconnect event
   socket.on('disconnect', () => {
     const user = users.get(socket.id)
-    
+
     if (user) {
-      // Remove from user list
       users.delete(socket.id)
-      
-      // Send leave message to all users
       const leaveMessage = createSystemMessage(`${user.username} left the chat room`)
       io.emit('user-left', { user: { id: socket.id, username: user.username }, message: leaveMessage })
-      
-      console.log(`${user.username} left the chat room, current online users: ${users.size}`)
+      console.log(`[${new Date().toISOString()}] ${user.username} left, online users: ${users.size}`)
     } else {
-      console.log(`User disconnected: ${socket.id}`)
+      console.log(`[${new Date().toISOString()}] User disconnected: ${socket.id}`)
     }
   })
 
+  // Error event
   socket.on('error', (error) => {
-    console.error(`Socket error (${socket.id}):`, error)
+    console.error(`[${new Date().toISOString()}] Socket error (${socket.id}):`, error)
   })
 })
 
-const PORT = 3003
+// Start server
 httpServer.listen(PORT, () => {
-  console.log(`WebSocket server running on port ${PORT}`)
+  console.log(``)
+  console.log(`🚀 WebSocket Chat Service Started`)
+  console.log(`📡 Listening on port ${PORT}`)
+  console.log(`🔗 WebSocket URL: ws://localhost:${PORT}`)
+  console.log(``)
 })
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('Received SIGTERM signal, shutting down server...')
+const shutdown = (signal: string) => {
+  console.log(`\n[${new Date().toISOString()}] Received ${signal}, shutting down...`)
   httpServer.close(() => {
-    console.log('WebSocket server closed')
+    console.log(`[${new Date().toISOString()}] WebSocket server closed`)
     process.exit(0)
   })
-})
+}
 
-process.on('SIGINT', () => {
-  console.log('Received SIGINT signal, shutting down server...')
-  httpServer.close(() => {
-    console.log('WebSocket server closed')
-    process.exit(0)
-  })
-})
+process.on('SIGTERM', () => shutdown('SIGTERM'))
+process.on('SIGINT', () => shutdown('SIGINT'))
