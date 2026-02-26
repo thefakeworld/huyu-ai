@@ -35,7 +35,7 @@ jobs:
       - name: Build
         env:
           GITHUB_PAGES: 'true'
-        run: bun run build
+        run: bunx next build
 
       - name: Add .nojekyll
         run: touch out/.nojekyll
