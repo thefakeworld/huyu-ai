@@ -28,7 +28,7 @@ const techStack = [
 
 export default function HomePage() {
   return (
-    <div className="space-y-12">
+    <div className="container mx-auto px-4 py-6 space-y-12">
       <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-background border p-8 md:p-12">
         <div className="relative z-10 flex flex-col lg:flex-row items-center gap-8">
           <div className="flex-1 space-y-6 text-center lg:text-left">

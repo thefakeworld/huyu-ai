@@ -68,7 +68,7 @@ export default function ComponentsPage() {
   }, [])
 
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto px-4 py-6 space-y-8">
       {/* 头部区域 */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-background border p-8">
         <div className="absolute top-4 right-4">

@@ -30,7 +30,7 @@ function UserDashboard() {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="container mx-auto px-4 py-6 space-y-6 max-w-4xl">
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row items-center gap-6">
@@ -124,7 +124,7 @@ function AuthPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="container mx-auto px-4 py-6 max-w-md">
       <Card>
         <CardHeader className="space-y-1 text-center">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">

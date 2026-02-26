@@ -38,7 +38,7 @@ export default function ExamplesPage() {
   const featuredDemos = demoConfigs.filter((demo) => demo.featured)
 
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto px-4 py-6 space-y-8">
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <Sparkles className="w-6 h-6 text-primary" />

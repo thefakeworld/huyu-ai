@@ -225,12 +225,125 @@ export function ComponentSidebar({ currentSlug }: ComponentSidebarProps) {
         {sidebarContent}
       </aside>
 
-      {/* 桌面端侧边栏 */}
-      <aside className="hidden lg:block w-64 shrink-0 border-r bg-muted/30">
-        <div className="sticky top-16 h-[calc(100vh-4rem)]">
-          {sidebarContent}
+      {/* 桌面端侧边栏 - 使用 fixed 定位，始终固定在视口中 */}
+      <aside className="hidden lg:block fixed left-0 top-16 w-64 h-[calc(100vh-4rem)] border-r bg-background z-30 overflow-hidden">
+        <div className="flex flex-col h-full">
+          {/* 搜索框 */}
+          <div className="p-4 border-b shrink-0">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="搜索组件..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+          </div>
+
+          {/* 组件列表 - 可滚动区域 */}
+          <ScrollArea className="flex-1 overflow-auto">
+            <div className="p-2">
+              {/* 搜索结果 */}
+              {filteredComponents ? (
+                <div className="space-y-1">
+                  <div className="px-3 py-2 text-xs font-medium text-muted-foreground">
+                    搜索结果 ({filteredComponents.length})
+                  </div>
+                  {filteredComponents.map((component) => (
+                    <Link
+                      key={component.slug}
+                      href={`/examples/components/${component.slug}`}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
+                        component.slug === currentSlug
+                          ? 'bg-primary text-primary-foreground'
+                          : 'hover:bg-muted'
+                      }`}
+                    >
+                      <span>{component.name}</span>
+                      <Badge variant="outline" className="text-xs ml-auto">
+                        {categoryInfo[component.category].label}
+                      </Badge>
+                    </Link>
+                  ))}
+                  {filteredComponents.length === 0 && (
+                    <div className="px-3 py-8 text-center text-muted-foreground text-sm">
+                      未找到匹配的组件
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* 分类列表 */
+                <div className="space-y-1">
+                  {categories.map((category) => {
+                    const components = getComponentsByCategory(category)
+                    const isExpanded = expandedCategories.has(category)
+                    const info = categoryInfo[category]
+                    const hasActiveComponent = components.some((c) => c.slug === currentSlug)
+
+                    return (
+                      <div key={category}>
+                        {/* 分类标题 */}
+                        <button
+                          onClick={() => toggleCategory(category)}
+                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            hasActiveComponent
+                              ? 'bg-primary/10 text-primary'
+                              : 'hover:bg-muted text-foreground'
+                          }`}
+                        >
+                          {categoryIcons[category]}
+                          <span className="flex-1 text-left">{info.label}</span>
+                          <Badge variant="secondary" className="text-xs">
+                            {components.length}
+                          </Badge>
+                          {isExpanded ? (
+                            <ChevronDown className="w-4 h-4" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4" />
+                          )}
+                        </button>
+
+                        {/* 组件列表 */}
+                        {isExpanded && (
+                          <div className="ml-4 mt-1 space-y-0.5 border-l pl-2">
+                            {components.map((component) => (
+                              <Link
+                                key={component.slug}
+                                href={`/examples/components/${component.slug}`}
+                                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors ${
+                                  component.slug === currentSlug
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+                                }`}
+                              >
+                                <span className="truncate">{component.name}</span>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+
+          {/* 底部信息 */}
+          <div className="p-4 border-t shrink-0">
+            <Link
+              href="/examples/components"
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Layout className="w-4 h-4" />
+              <span>查看所有组件</span>
+            </Link>
+          </div>
         </div>
       </aside>
+      {/* 占位元素，防止主内容区被侧边栏遮挡 */}
+      <div className="hidden lg:block w-64 shrink-0" />
     </>
   )
 }

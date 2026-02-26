@@ -57,7 +57,7 @@ export default function BusinessComponentsPage() {
   }, [])
 
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto px-4 py-6 space-y-8">
       {/* 头部区域 */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-background border p-8">
         <div className="flex flex-col md:flex-row items-start gap-6">
