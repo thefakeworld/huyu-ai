@@ -8,6 +8,7 @@ export function generateStaticParams() {
   }))
 }
 
-export default function ComponentDetailPage({ params }: { params: { slug: string } }) {
-  return <ComponentDetailClient slug={params.slug} />
+export default async function ComponentDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  return <ComponentDetailClient slug={slug} />
 }
