@@ -26,6 +26,20 @@ import { SwitchDemo } from '@/components/docs/demos/switch-demo'
 import { ProgressDemo } from '@/components/docs/demos/progress-demo'
 import { SkeletonDemo } from '@/components/docs/demos/skeleton-demo'
 import { AvatarDemo } from '@/components/docs/demos/avatar-demo'
+import { SelectDemo } from '@/components/docs/demos/select-demo'
+import { TextareaDemo } from '@/components/docs/demos/textarea-demo'
+import { RadioGroupDemo } from '@/components/docs/demos/radio-group-demo'
+import { SliderDemo } from '@/components/docs/demos/slider-demo'
+import { ToastDemo } from '@/components/docs/demos/toast-demo'
+import { TooltipDemo } from '@/components/docs/demos/tooltip-demo'
+import { PopoverDemo } from '@/components/docs/demos/popover-demo'
+import { AlertDialogDemo } from '@/components/docs/demos/alert-dialog-demo'
+import { SheetDemo } from '@/components/docs/demos/sheet-demo'
+import { AccordionDemo } from '@/components/docs/demos/accordion-demo'
+import { ScrollAreaDemo } from '@/components/docs/demos/scroll-area-demo'
+import { DropdownMenuDemo } from '@/components/docs/demos/dropdown-menu-demo'
+import { CommandDemo } from '@/components/docs/demos/command-demo'
+import { CarouselDemo } from '@/components/docs/demos/carousel-demo'
 import {
   ArrowLeft,
   Code2,
@@ -40,18 +54,38 @@ import {
 } from 'lucide-react'
 
 const demoComponents: Record<string, React.ComponentType> = {
+  // 基础组件
   button: ButtonDemo,
-  input: InputDemo,
   badge: BadgeDemo,
+  skeleton: SkeletonDemo,
+  // 表单组件
+  input: InputDemo,
+  textarea: TextareaDemo,
+  checkbox: CheckboxDemo,
+  'radio-group': RadioGroupDemo,
+  select: SelectDemo,
+  switch: SwitchDemo,
+  slider: SliderDemo,
+  // 布局组件
   card: CardDemo,
+  tabs: TabsDemo,
+  accordion: AccordionDemo,
+  'scroll-area': ScrollAreaDemo,
+  // 反馈组件
   alert: AlertDemo,
   dialog: DialogDemo,
-  tabs: TabsDemo,
-  checkbox: CheckboxDemo,
-  switch: SwitchDemo,
-  progress: ProgressDemo,
-  skeleton: SkeletonDemo,
+  'alert-dialog': AlertDialogDemo,
+  sheet: SheetDemo,
+  toast: ToastDemo,
+  popover: PopoverDemo,
+  tooltip: TooltipDemo,
+  // 数据展示
   avatar: AvatarDemo,
+  progress: ProgressDemo,
+  // 高级组件
+  command: CommandDemo,
+  'dropdown-menu': DropdownMenuDemo,
+  carousel: CarouselDemo,
 }
 
 // 获取组件的安装代码
