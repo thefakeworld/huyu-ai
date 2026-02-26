@@ -3,13 +3,13 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { useAppStore } from '@/stores/app-store'
 import { useAuthStore } from '@/stores/auth-store'
-import { ArrowLeft, Send, Users, Wifi, WifiOff, MessageSquare, User as UserIcon, Circle } from 'lucide-react'
+import { ArrowLeft, Send, Users, Wifi, WifiOff, MessageSquare, User as UserIcon, Circle, LogIn, AlertTriangle } from 'lucide-react'
 
 type User = { id: string; username: string }
 type Message = { id: string; username: string; content: string; timestamp: Date | string; type: 'user' | 'system' }
@@ -24,38 +24,85 @@ export function WebSocketDemo() {
   const [socket, setSocket] = useState<{ emit: (event: string, data: unknown) => void; disconnect: () => void } | null>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [users, setUsers] = useState<User[]>([])
-  const [connectionError, setConnectionError] = useState<string | null>(null)
+  const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('connecting')
 
+  // 初始化用户名
   useEffect(() => {
-    if (isAuthenticated && user?.name && !username) setUsername(user.name)
+    if (isAuthenticated && user?.name && !username) {
+      setUsername(user.name)
+    }
   }, [isAuthenticated, user, username])
 
+  // 初始化WebSocket连接
   useEffect(() => {
+    // 如果未登录，不尝试连接
+    if (!isAuthenticated) {
+      setConnectionStatus('disconnected')
+      return
+    }
+
+    let socketInstance: { on: (event: string, callback: (data: unknown) => void) => void; emit: (event: string, data: unknown) => void; disconnect: () => void } | null = null
+
     const initSocket = async () => {
       try {
+        setConnectionStatus('connecting')
         const { io } = await import('socket.io-client')
-        const socketInstance = io('/?XTransformPort=3003', { transports: ['websocket', 'polling'], forceNew: true, reconnection: true, reconnectionAttempts: 5, reconnectionDelay: 1000, timeout: 10000 })
-        setSocket(socketInstance)
-        socketInstance.on('connect', () => { setIsConnected(true); setConnectionError(null) })
-        socketInstance.on('disconnect', () => setIsConnected(false))
-        socketInstance.on('connect_error', () => { setConnectionError('无法连接到聊天服务器'); setIsConnected(false) })
-        socketInstance.on('message', (msg: Message) => setMessages(prev => [...prev, msg]))
+        socketInstance = io('/?XTransformPort=3003', {
+          transports: ['websocket', 'polling'],
+          forceNew: true,
+          reconnection: true,
+          reconnectionAttempts: 3,
+          reconnectionDelay: 1000,
+          timeout: 8000
+        })
+
+        socketInstance.on('connect', () => {
+          setConnectionStatus('connected')
+          setIsConnected(true)
+        })
+
+        socketInstance.on('disconnect', () => {
+          setIsConnected(false)
+          setConnectionStatus('disconnected')
+        })
+
+        socketInstance.on('connect_error', () => {
+          setConnectionStatus('error')
+          setIsConnected(false)
+        })
+
+        socketInstance.on('message', (msg: Message) => {
+          setMessages(prev => [...prev, msg])
+        })
+
         socketInstance.on('user-joined', (data: { user: User; message: Message }) => {
           setMessages(prev => [...prev, data.message])
           setUsers(prev => prev.find(u => u.id === data.user.id) ? prev : [...prev, data.user])
         })
+
         socketInstance.on('user-left', (data: { user: User; message: Message }) => {
           setMessages(prev => [...prev, data.message])
           setUsers(prev => prev.filter(u => u.id !== data.user.id))
         })
-        socketInstance.on('users-list', (data: { users: User[] }) => setUsers(data.users))
+
+        socketInstance.on('users-list', (data: { users: User[] }) => {
+          setUsers(data.users)
+        })
+
+        setSocket(socketInstance)
       } catch {
-        setConnectionError('无法加载聊天组件')
+        setConnectionStatus('error')
       }
     }
+
     initSocket()
-    return () => { if (socket) socket.disconnect() }
-  }, [])
+
+    return () => {
+      if (socketInstance) {
+        socketInstance.disconnect()
+      }
+    }
+  }, [isAuthenticated])
 
   const handleJoin = () => {
     if (socket && username.trim() && isConnected) {
@@ -86,46 +133,173 @@ export function WebSocketDemo() {
     setView('examples')
   }
 
+  const handleGoToLogin = () => {
+    setView('user')
+  }
+
+  // 未登录状态 - 显示登录提示
+  if (!isAuthenticated) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-4">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={handleBack}>
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold flex items-center gap-2">
+              <MessageSquare className="w-6 h-6 text-primary" />
+              {currentDemo?.name || 'WebSocket 聊天室'}
+            </h1>
+            <p className="text-muted-foreground text-sm">实时多人聊天应用</p>
+          </div>
+        </div>
+
+        <Card className="max-w-md mx-auto">
+          <CardHeader className="text-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+              <LogIn className="w-8 h-8 text-primary" />
+            </div>
+            <CardTitle>需要登录</CardTitle>
+            <CardDescription>
+              使用聊天室功能需要先登录账户
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground text-center">
+              登录后您可以体验实时多人聊天功能，与其他用户互动交流
+            </p>
+            <Button className="w-full" onClick={handleGoToLogin}>
+              <LogIn className="w-4 h-4 mr-2" />
+              前往登录
+            </Button>
+            <Button variant="outline" className="w-full" onClick={handleBack}>
+              返回案例广场
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // 连接错误状态
+  if (connectionStatus === 'error') {
+    return (
+      <div className="max-w-4xl mx-auto space-y-4">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={handleBack}>
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold flex items-center gap-2">
+              <MessageSquare className="w-6 h-6 text-primary" />
+              {currentDemo?.name || 'WebSocket 聊天室'}
+            </h1>
+            <p className="text-muted-foreground text-sm">实时多人聊天应用</p>
+          </div>
+        </div>
+
+        <Card className="max-w-md mx-auto border-yellow-200 bg-yellow-50">
+          <CardHeader className="text-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-yellow-100 flex items-center justify-center">
+              <AlertTriangle className="w-8 h-8 text-yellow-600" />
+            </div>
+            <CardTitle className="text-yellow-800">服务暂时不可用</CardTitle>
+            <CardDescription className="text-yellow-700">
+              聊天服务器当前未启动
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-yellow-700 text-center">
+              这是一个演示案例，WebSocket服务器需要单独启动。您可以查看代码了解实现方式。
+            </p>
+            <div className="flex gap-2">
+              <Button variant="outline" className="flex-1" onClick={handleBack}>
+                返回案例广场
+              </Button>
+              <Button
+                className="flex-1"
+                onClick={() => window.location.reload()}
+              >
+                重新连接
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-muted/50">
+          <CardHeader>
+            <CardTitle className="text-base">如何启动聊天服务器</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <code className="text-sm bg-muted p-3 rounded block">
+              cd examples/websocket && bun run server.ts
+            </code>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // 正常聊天界面
   return (
     <div className="max-w-4xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={handleBack}><ArrowLeft className="w-5 h-5" /></Button>
+          <Button variant="ghost" size="icon" onClick={handleBack}>
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
-              <MessageSquare className="w-6 h-6 text-primary" />{currentDemo?.name || 'WebSocket 聊天室'}
+              <MessageSquare className="w-6 h-6 text-primary" />
+              {currentDemo?.name || 'WebSocket 聊天室'}
             </h1>
             <p className="text-muted-foreground text-sm">实时多人聊天应用</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant={isConnected ? 'default' : 'secondary'} className="gap-1">
-            {isConnected ? <><Wifi className="w-3 h-3" />已连接</> : <><WifiOff className="w-3 h-3" />未连接</>}
+            {isConnected ? (
+              <><Wifi className="w-3 h-3" />已连接</>
+            ) : (
+              <><WifiOff className="w-3 h-3" />连接中...</>
+            )}
           </Badge>
-          <Badge variant="outline" className="gap-1"><Users className="w-3 h-3" />{users.length} 在线</Badge>
+          <Badge variant="outline" className="gap-1">
+            <Users className="w-3 h-3" />
+            {users.length} 在线
+          </Badge>
         </div>
       </div>
 
-      {connectionError && (
-        <Card className="border-destructive bg-destructive/10">
-          <CardContent className="py-3"><p className="text-destructive text-sm">{connectionError}</p></CardContent>
-        </Card>
-      )}
-
       <div className="grid lg:grid-cols-4 gap-4">
         <Card className="lg:col-span-3">
-          <CardHeader className="pb-3"><CardTitle className="text-base">聊天室</CardTitle></CardHeader>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">聊天室</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-4">
             {!isUsernameSet ? (
               <div className="space-y-4 py-8">
                 <div className="text-center space-y-2">
                   <UserIcon className="w-12 h-12 mx-auto text-muted-foreground" />
                   <h3 className="font-medium">加入聊天室</h3>
-                  <p className="text-sm text-muted-foreground">输入您的昵称开始聊天</p>
+                  <p className="text-sm text-muted-foreground">
+                    {isAuthenticated ? `欢迎 ${user?.name || '用户'}，点击加入开始聊天` : '输入您的昵称开始聊天'}
+                  </p>
                 </div>
                 <div className="flex gap-2 max-w-sm mx-auto">
-                  <Input value={username} onChange={(e) => setUsername(e.target.value)} onKeyPress={handleKeyPress} placeholder="输入昵称..." disabled={!isConnected} />
-                  <Button onClick={handleJoin} disabled={!isConnected || !username.trim()}>加入</Button>
+                  <Input
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="输入昵称..."
+                    disabled={!isConnected}
+                  />
+                  <Button
+                    onClick={handleJoin}
+                    disabled={!isConnected || !username.trim()}
+                  >
+                    加入
+                  </Button>
                 </div>
               </div>
             ) : (
@@ -141,9 +315,28 @@ export function WebSocketDemo() {
                       messages.map((msg) => (
                         <div key={msg.id} className="space-y-1">
                           <div className="flex items-start gap-2">
-                            <div className={`px-2 py-0.5 rounded text-xs font-medium ${msg.type === 'system' ? 'bg-blue-100 text-blue-700' : 'bg-muted'}`}>{msg.username}</div>
-                            <div className="flex-1"><p className={`text-sm ${msg.type === 'system' ? 'text-blue-600 italic' : ''}`}>{msg.content}</p></div>
-                            <span className="text-xs text-muted-foreground shrink-0">{new Date(msg.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
+                            <div className={`px-2 py-0.5 rounded text-xs font-medium ${
+                              msg.type === 'system'
+                                ? 'bg-blue-100 text-blue-700'
+                                : 'bg-muted'
+                            }`}>
+                              {msg.username}
+                            </div>
+                            <div className="flex-1">
+                              <p className={`text-sm ${
+                                msg.type === 'system'
+                                  ? 'text-blue-600 italic'
+                                  : ''
+                              }`}>
+                                {msg.content}
+                              </p>
+                            </div>
+                            <span className="text-xs text-muted-foreground shrink-0">
+                              {new Date(msg.timestamp).toLocaleTimeString('zh-CN', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </span>
                           </div>
                           <Separator className="my-2" />
                         </div>
@@ -152,8 +345,20 @@ export function WebSocketDemo() {
                   </div>
                 </ScrollArea>
                 <div className="flex gap-2">
-                  <Input value={inputMessage} onChange={(e) => setInputMessage(e.target.value)} onKeyPress={handleKeyPress} placeholder="输入消息..." disabled={!isConnected} className="flex-1" />
-                  <Button onClick={sendMessage} disabled={!isConnected || !inputMessage.trim()}><Send className="w-4 h-4" /></Button>
+                  <Input
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="输入消息..."
+                    disabled={!isConnected}
+                    className="flex-1"
+                  />
+                  <Button
+                    onClick={sendMessage}
+                    disabled={!isConnected || !inputMessage.trim()}
+                  >
+                    <Send className="w-4 h-4" />
+                  </Button>
                 </div>
               </>
             )}
@@ -161,14 +366,24 @@ export function WebSocketDemo() {
         </Card>
 
         <Card className="lg:col-span-1">
-          <CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><Users className="w-4 h-4" />在线用户</CardTitle></CardHeader>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              在线用户
+            </CardTitle>
+          </CardHeader>
           <CardContent>
             {users.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">暂无在线用户</p>
+              <p className="text-sm text-muted-foreground text-center py-4">
+                暂无在线用户
+              </p>
             ) : (
               <div className="space-y-2">
                 {users.map((u) => (
-                  <div key={u.id} className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted transition-colors">
+                  <div
+                    key={u.id}
+                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted transition-colors"
+                  >
                     <Circle className="w-2 h-2 fill-green-500 text-green-500" />
                     <span className="text-sm truncate">{u.username}</span>
                   </div>
@@ -182,7 +397,11 @@ export function WebSocketDemo() {
       <Card className="bg-muted/50">
         <CardContent className="py-4">
           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-            <span>技术栈: Socket.io + React</span><span>•</span><span>实时双向通信</span><span>•</span><span>自动重连</span>
+            <span>技术栈: Socket.io + React</span>
+            <span>•</span>
+            <span>实时双向通信</span>
+            <span>•</span>
+            <span>自动重连</span>
           </div>
         </CardContent>
       </Card>

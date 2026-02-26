@@ -1,141 +1,108 @@
-# 🚀 Welcome to Z.ai Code Scaffold
+# Z.ai Code Scaffold
 
-A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
+基于 Next.js 16 的现代化全栈开发脚手架，集成最佳实践和 AI 辅助编程。
 
-## ✨ Technology Stack
+## ✨ 特性
 
-This scaffold provides a robust foundation built with:
+- 🚀 **Next.js 16** - 最新版本 App Router
+- 💎 **TypeScript 5** - 完整类型支持
+- 🎨 **Tailwind CSS 4** - 原子化 CSS
+- 🧩 **shadcn/ui** - 49 个精美组件
+- 🗄️ **Prisma ORM** - SQLite 数据库
+- 📦 **Zustand** - 轻量状态管理
+- ✅ **React Hook Form + Zod** - 表单验证
+- 🔐 **完整认证系统** - 邮箱登录 + OAuth
 
-### 🎯 Core Framework
-- **⚡ Next.js 16** - The React framework for production with App Router
-- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
-- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
-
-### 🧩 UI Components & Styling
-- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
-- **🎯 Lucide React** - Beautiful & consistent icon library
-- **🌈 Framer Motion** - Production-ready motion library for React
-- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
-
-### 📋 Forms & Validation
-- **🎣 React Hook Form** - Performant forms with easy validation
-- **✅ Zod** - TypeScript-first schema validation
-
-### 🔄 State Management & Data Fetching
-- **🐻 Zustand** - Simple, scalable state management
-- **🔄 TanStack Query** - Powerful data synchronization for React
-- **🌐 Fetch** - Promise-based HTTP request
-
-### 🗄️ Database & Backend
-- **🗄️ Prisma** - Next-generation TypeScript ORM
-- **🔐 NextAuth.js** - Complete open-source authentication solution
-
-### 🎨 Advanced UI Features
-- **📊 TanStack Table** - Headless UI for building tables and datagrids
-- **🖱️ DND Kit** - Modern drag and drop toolkit for React
-- **📊 Recharts** - Redefined chart library built with React and D3
-- **🖼️ Sharp** - High performance image processing
-
-### 🌍 Internationalization & Utilities
-- **🌍 Next Intl** - Internationalization library for Next.js
-- **📅 Date-fns** - Modern JavaScript date utility library
-- **🪝 ReactUse** - Collection of essential React hooks for modern development
-
-## 🎯 Why This Scaffold?
-
-- **🏎️ Fast Development** - Pre-configured tooling and best practices
-- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
-- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
-- **📱 Responsive** - Mobile-first design principles with smooth animations
-- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
-- **🔐 Auth Included** - NextAuth.js for secure authentication flows
-- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
-- **🌍 i18n Ready** - Multi-language support with Next Intl
-- **🚀 Production Ready** - Optimized build and deployment settings
-- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
-
-## 🚀 Quick Start
-
-```bash
-# Install dependencies
-bun install
-
-# Start development server
-bun run dev
-
-# Build for production
-bun run build
-
-# Start production server
-bun start
-```
-
-Open [http://localhost:3000](http://localhost:3000) to see your application running.
-
-## 🤖 Powered by Z.ai
-
-This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
-
-- **💻 Code Generation** - Generate components, pages, and features instantly
-- **🎨 UI Development** - Create beautiful interfaces with AI assistance  
-- **🔧 Bug Fixing** - Identify and resolve issues with intelligent suggestions
-- **📝 Documentation** - Auto-generate comprehensive documentation
-- **🚀 Optimization** - Performance improvements and best practices
-
-Ready to build something amazing? Start chatting with Z.ai at [chat.z.ai](https://chat.z.ai) and experience the future of AI-powered development!
-
-## 📁 Project Structure
+## 📦 项目结构
 
 ```
 src/
-├── app/                 # Next.js App Router pages
-├── components/          # Reusable React components
-│   └── ui/             # shadcn/ui components
-├── hooks/              # Custom React hooks
-└── lib/                # Utility functions and configurations
+├── app/                    # Next.js App Router
+│   ├── (main)/            # 主布局路由组
+│   │   ├── page.tsx       # 首页
+│   │   ├── examples/      # 案例广场
+│   │   │   ├── page.tsx
+│   │   │   └── components/ # 组件展示
+│   │   └── user/          # 用户中心
+│   ├── login/             # 登录页（独立布局）
+│   ├── demo/              # 演示页面
+│   │   └── websocket/     # WebSocket 聊天室
+│   └── api/               # API 路由
+│       └── auth/          # 认证接口
+├── components/
+│   ├── ui/                # shadcn/ui 组件
+│   ├── auth/              # 认证组件
+│   ├── layout/            # 布局组件
+│   └── showcase/          # 组件展示模块
+├── stores/                # Zustand 状态管理
+├── lib/                   # 工具函数
+├── hooks/                 # 自定义 Hooks
+└── types/                 # 类型定义
 ```
 
-## 🎨 Available Features & Components
+## 🚀 快速开始
 
-This scaffold includes a comprehensive set of modern web development tools:
+```bash
+# 安装依赖
+bun install
 
-### 🧩 UI Components (shadcn/ui)
-- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
-- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
-- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
-- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
-- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
-- **Data Display**: Badge, Avatar, Calendar
+# 初始化数据库
+bunx prisma db push
 
-### 📊 Advanced Data Features
-- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
-- **Charts**: Beautiful visualizations with Recharts
-- **Forms**: Type-safe forms with React Hook Form + Zod validation
+# 启动开发服务器
+bun run dev
+```
 
-### 🎨 Interactive Features
-- **Animations**: Smooth micro-interactions with Framer Motion
-- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
-- **Theme Switching**: Built-in dark/light mode support
+访问 http://localhost:3000
 
-### 🔐 Backend Integration
-- **Authentication**: Ready-to-use auth flows with NextAuth.js
-- **Database**: Type-safe database operations with Prisma
-- **API Client**: HTTP requests with Fetch + TanStack Query
-- **State Management**: Simple and scalable with Zustand
+## 📱 页面预览
 
-### 🌍 Production Features
-- **Internationalization**: Multi-language support with Next Intl
-- **Image Optimization**: Automatic image processing with Sharp
-- **Type Safety**: End-to-end TypeScript with Zod validation
-- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
+| 页面 | 路径 | 说明 |
+|------|------|------|
+| 首页 | `/` | 项目介绍 |
+| 案例广场 | `/examples` | 功能演示入口 |
+| 组件展示 | `/examples/components` | 49个UI组件文档 |
+| 用户中心 | `/user` | 登录/用户信息 |
+| 登录页 | `/login` | 独立登录页 |
+| 聊天室 | `/demo/websocket` | WebSocket演示 |
 
-## 🤝 Get Started with Z.ai
+## 🧩 组件展示
 
-1. **Clone this scaffold** to jumpstart your project
-2. **Visit [chat.z.ai](https://chat.z.ai)** to access your AI coding assistant
-3. **Start building** with intelligent code generation and assistance
-4. **Deploy with confidence** using the production-ready setup
+内置 49 个 shadcn/ui 组件，包含完整的文档和使用示例：
 
----
+- **基础组件**: Button, Badge, Separator, Skeleton, AspectRatio
+- **表单组件**: Input, Textarea, Checkbox, RadioGroup, Select, Switch, Slider
+- **布局组件**: Card, Tabs, Accordion, Collapsible, Resizable, ScrollArea
+- **导航组件**: NavigationMenu, Breadcrumb, Pagination, Menubar
+- **反馈组件**: Alert, Dialog, AlertDialog, Drawer, Sheet, Toast, Tooltip
+- **数据展示**: Table, Avatar, Progress, Calendar, Chart
+- **高级组件**: Command, ContextMenu, DropdownMenu, Toggle, Carousel
 
-Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
+## 🔐 认证功能
+
+- ✅ 邮箱密码注册/登录
+- ✅ 记住登录状态
+- ✅ Google OAuth（需配置）
+- ✅ 密码加密存储（SHA-256 + salt）
+- ✅ Session 会话管理
+
+## 🛠️ 技术栈
+
+| 类别 | 技术 |
+|------|------|
+| 框架 | Next.js 16 |
+| 语言 | TypeScript 5 |
+| 样式 | Tailwind CSS 4 |
+| 组件 | shadcn/ui + Radix UI |
+| 数据库 | Prisma + SQLite |
+| 状态 | Zustand |
+| 表单 | React Hook Form + Zod |
+| 图标 | Lucide React |
+
+## 📄 License
+
+MIT
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！

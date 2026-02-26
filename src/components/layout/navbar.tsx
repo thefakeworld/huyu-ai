@@ -3,14 +3,16 @@
 import { useSyncExternalStore } from 'react'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/auth-store'
-import { useAppStore, type ViewType } from '@/stores/app-store'
 import { UserAvatar } from '@/components/auth/auth-provider'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Home, LayoutGrid, User, LogOut, Menu, X, Sparkles } from 'lucide-react'
+import { useState } from 'react'
 
-const navItems: { id: ViewType; label: string; icon: typeof Home }[] = [
-  { id: 'home', label: '首页', icon: Home },
-  { id: 'examples', label: '案例广场', icon: LayoutGrid },
-  { id: 'user', label: '用户中心', icon: User },
+const navItems = [
+  { id: 'home', label: '首页', href: '/', icon: Home },
+  { id: 'examples', label: '案例广场', href: '/examples', icon: LayoutGrid },
+  { id: 'user', label: '用户中心', href: '/user', icon: User },
 ]
 
 function useIsClient() {
@@ -19,12 +21,13 @@ function useIsClient() {
 
 export function Navbar() {
   const isClient = useIsClient()
-  const { currentView, setView, sidebarOpen, toggleSidebar } = useAppStore()
+  const pathname = usePathname()
   const { isAuthenticated, user, logout } = useAuthStore()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  const handleNavClick = (view: ViewType) => {
-    setView(view)
-    if (sidebarOpen) toggleSidebar()
+  const isActive = (href: string) => {
+    if (href === '/') return pathname === '/'
+    return pathname.startsWith(href)
   }
 
   const handleLogout = async () => { await logout() }
@@ -44,19 +47,22 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => handleNavClick('home')}>
+        <Link href="/" className="flex items-center gap-2">
           <img src="/logo.svg" alt="Z.ai Logo" className="w-8 h-8" />
           <span className="font-bold text-xl hidden sm:inline">Z.ai</span>
           <Sparkles className="w-4 h-4 text-primary hidden sm:inline" />
-        </div>
+        </Link>
 
         <nav className="hidden md:flex items-center gap-1">
           {navItems.map((item) => {
             const Icon = item.icon
+            const active = isActive(item.href)
             return (
-              <Button key={item.id} variant={currentView === item.id ? 'secondary' : 'ghost'} size="sm" onClick={() => handleNavClick(item.id)} className="gap-2">
-                <Icon className="w-4 h-4" />
-                {item.label}
+              <Button key={item.id} variant={active ? 'secondary' : 'ghost'} size="sm" asChild className="gap-2">
+                <Link href={item.href}>
+                  <Icon className="w-4 h-4" />
+                  {item.label}
+                </Link>
               </Button>
             )
           })}
@@ -75,9 +81,16 @@ export function Navbar() {
               </Button>
             </div>
           ) : (
-            <Button variant="default" size="sm" onClick={() => handleNavClick('user')}>登录</Button>
+            <Button variant="default" size="sm" asChild>
+              <Link href="/login">登录</Link>
+            </Button>
           )}
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleSidebar}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
             {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
         </div>
@@ -88,10 +101,20 @@ export function Navbar() {
           <nav className="container mx-auto px-4 py-2 flex flex-col gap-1">
             {navItems.map((item) => {
               const Icon = item.icon
+              const active = isActive(item.href)
               return (
-                <Button key={item.id} variant={currentView === item.id ? 'secondary' : 'ghost'} size="sm" onClick={() => handleNavClick(item.id)} className="gap-2 justify-start">
-                  <Icon className="w-4 h-4" />
-                  {item.label}
+                <Button
+                  key={item.id}
+                  variant={active ? 'secondary' : 'ghost'}
+                  size="sm"
+                  asChild
+                  className="gap-2 justify-start"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <Link href={item.href}>
+                    <Icon className="w-4 h-4" />
+                    {item.label}
+                  </Link>
                 </Button>
               )
             })}
@@ -100,10 +123,6 @@ export function Navbar() {
       )}
     </header>
   )
-}
-
-export function PageContainer({ children }: { children: React.ReactNode }) {
-  return <main className="flex-1"><div className="container mx-auto px-4 py-6">{children}</div></main>
 }
 
 export function Footer() {
