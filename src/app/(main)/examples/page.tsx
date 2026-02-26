@@ -6,8 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import Link from 'next/link'
-import { MessageSquare, Search, Star, Users, Clock, ArrowRight, Filter, Sparkles, Package, Code2 } from 'lucide-react'
-import { componentRegistry } from '@/components/showcase/component-registry'
+import { MessageSquare, Search, Star, Users, Clock, ArrowRight, Filter, Sparkles, Package, Code2, Layers } from 'lucide-react'
+import { componentRegistry } from '@/components/docs/component-registry'
+import { businessRegistry } from '@/components/business/registry'
 
 const demoConfigs = [
   {
@@ -46,8 +47,9 @@ export default function ExamplesPage() {
         <p className="text-muted-foreground text-lg">探索基于 Z.ai Scaffold 构建的精彩案例项目</p>
       </div>
 
-      {/* 功能入口 */}
-      <section className="grid md:grid-cols-2 gap-4">
+      {/* 功能入口 - 三列布局 */}
+      <section className="grid md:grid-cols-3 gap-4">
+        {/* UI 组件 */}
         <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-primary/30 bg-gradient-to-br from-primary/5 to-background">
           <Link href="/examples/components">
             <CardHeader>
@@ -57,8 +59,8 @@ export default function ExamplesPage() {
                     <Package className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg">组件展示</CardTitle>
-                    <Badge variant="secondary" className="mt-1">UI组件库</Badge>
+                    <CardTitle className="text-lg">UI 组件</CardTitle>
+                    <Badge variant="secondary" className="mt-1">基础组件库</Badge>
                   </div>
                 </div>
                 <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -66,20 +68,50 @@ export default function ExamplesPage() {
             </CardHeader>
             <CardContent>
               <CardDescription className="text-base mb-3">
-                浏览项目中的 {componentRegistry.length} 个 UI 组件，查看文档、属性说明和使用示例。
+                浏览 {componentRegistry.length} 个基础 UI 组件，查看文档、属性和使用示例。
               </CardDescription>
               <div className="flex flex-wrap gap-2">
                 <Badge variant="outline" className="text-xs">Button</Badge>
                 <Badge variant="outline" className="text-xs">Input</Badge>
                 <Badge variant="outline" className="text-xs">Dialog</Badge>
-                <Badge variant="outline" className="text-xs">Card</Badge>
-                <Badge variant="outline" className="text-xs">+{componentRegistry.length - 4} 更多</Badge>
+                <Badge variant="outline" className="text-xs">+{componentRegistry.length - 3} 更多</Badge>
               </div>
             </CardContent>
           </Link>
         </Card>
 
-        <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-primary/30 bg-gradient-to-br from-primary/5 to-background">
+        {/* 业务组件 */}
+        <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-emerald-500/30 bg-gradient-to-br from-emerald-500/5 to-background">
+          <Link href="/examples/business">
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-lg bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
+                    <Layers className="w-6 h-6 text-emerald-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">业务组件</CardTitle>
+                    <Badge variant="secondary" className="mt-1 bg-emerald-500/10 text-emerald-600">业务模块</Badge>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-600 transition-colors" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-base mb-3">
+                探索 {businessRegistry.length} 个业务级组件，包含认证、布局、页面模块。
+              </CardDescription>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="text-xs">LoginForm</Badge>
+                <Badge variant="outline" className="text-xs">Navbar</Badge>
+                <Badge variant="outline" className="text-xs">+{businessRegistry.length - 2} 更多</Badge>
+              </div>
+            </CardContent>
+          </Link>
+        </Card>
+
+        {/* 在线演示 */}
+        <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-primary/30 bg-gradient-to-br from-primary/5 to-background md:row-span-1">
           <Link href="/demo/websocket">
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -97,12 +129,11 @@ export default function ExamplesPage() {
             </CardHeader>
             <CardContent>
               <CardDescription className="text-base mb-3">
-                体验实时 WebSocket 聊天室，感受前后端联动的完整功能演示。
+                体验实时 WebSocket 聊天室，感受前后端联动的完整功能。
               </CardDescription>
               <div className="flex flex-wrap gap-2">
                 <Badge variant="outline" className="text-xs">WebSocket</Badge>
                 <Badge variant="outline" className="text-xs">实时通信</Badge>
-                <Badge variant="outline" className="text-xs">Socket.io</Badge>
               </div>
             </CardContent>
           </Link>

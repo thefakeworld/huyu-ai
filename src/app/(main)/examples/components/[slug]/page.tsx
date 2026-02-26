@@ -1,4 +1,4 @@
-import { componentRegistry } from '@/components/showcase/component-registry'
+import { componentRegistry } from '@/components/docs/component-registry'
 import ComponentDetailClient from './client'
 
 // 静态生成所有组件页面

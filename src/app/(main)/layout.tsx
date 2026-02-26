@@ -1,4 +1,4 @@
-import { Navbar, Footer } from '@/components/layout/navbar'
+import { Navbar, Footer } from '@/components/business/layout/navbar'
 
 export default function MainLayout({
   children,

@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from 'react'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/auth-store'
-import { UserAvatar } from '@/components/auth/auth-provider'
+import { UserAvatar } from '@/components/business/auth/auth-provider'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, LayoutGrid, User, LogOut, Menu, X, Sparkles } from 'lucide-react'
