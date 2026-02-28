@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./db/custom.db"
 }
 
 model User {
@@ -21,6 +21,7 @@ model User {
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   sessions   Session[]
+  messages   ChatMessage[]
 
   @@index([email])
   @@index([provider, providerId])
@@ -37,6 +38,48 @@ model Session {
 
   @@index([token])
   @@index([userId])
+}
+
+model ChatRoom {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  isPublic    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  messages    ChatMessage[]
+
+  @@index([name])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  content   String
+  type      String   @default("USER") // USER, SYSTEM, AI
+  roomId    String?
+  userId    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  room      ChatRoom? @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  files     FileAttachment[]
+
+  @@index([roomId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model FileAttachment {
+  id        String   @id @default(cuid())
+  name      String
+  url       String
+  size      Int
+  mimeType  String
+  messageId String
+  createdAt DateTime @default(now())
+  message   ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
 }
 
 model Post {
