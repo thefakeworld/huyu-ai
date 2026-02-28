@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ['main', 'doc']
+    branches: ['main']
   workflow_dispatch:
 
 permissions:
@@ -30,7 +30,9 @@ jobs:
         run: bun install
 
       - name: Remove API routes for static export
-        run: rm -rf src/app/api
+        run: |
+          rm -rf src/app/api
+          rm -rf src/app/demo
 
       - name: Build
         env:
