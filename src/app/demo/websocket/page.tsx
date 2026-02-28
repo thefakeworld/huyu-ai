@@ -77,7 +77,7 @@ export default function WebSocketDemoPage() {
 
         const wsUrl = isLocalhost
           ? 'http://localhost:3003'
-          : 'https://registrar-duty-vacuum-brochures.trycloudflare.com'
+          : 'https://mathematical-emperor-replaced-jelsoft.trycloudflare.com'
 
         socketInstance = io(wsUrl, {
           transports: ['websocket', 'polling'],
