@@ -43,7 +43,17 @@ export default function WebSocketDemoPage() {
       try {
         setConnectionStatus('connecting')
         const { io } = await import('socket.io-client')
-        socketInstance = io('/?XTransformPort=3003', {
+
+        // 动态确定 WebSocket 连接地址
+        const isLocalhost = typeof window !== 'undefined' &&
+          (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+
+        // WebSocket 服务器地址（外网使用专用隧道）
+        const wsUrl = isLocalhost
+          ? 'http://localhost:3003'
+          : 'https://registrar-duty-vacuum-brochures.trycloudflare.com'
+
+        socketInstance = io(wsUrl, {
           transports: ['websocket', 'polling'],
           forceNew: true,
           reconnection: true,

@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  allowedDevOrigins: [
+    'cliff-election-supplements-households.trycloudflare.com',
+    'registrar-duty-vacuum-brochures.trycloudflare.com',
+  ],
 };
 
 export default nextConfig;

@@ -49,9 +49,14 @@ export const COOKIE_NAME = 'auth_session'
 export async function setSessionCookie(token: string, rememberMe: boolean = false): Promise<void> {
   const cookieStore = await cookies()
   const maxAge = rememberMe ? 7 * 24 * 60 * 60 : 24 * 60 * 60
+  // 通过隧道访问时也需要 secure cookie
+  const requestHeaders = await import('next/headers').then(m => m.headers())
+  const forwardedProto = requestHeaders.get('x-forwarded-proto')
+  const isSecure = process.env.NODE_ENV === 'production' || forwardedProto === 'https'
+
   cookieStore.set(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: isSecure,
     sameSite: 'lax',
     maxAge,
     path: '/',
