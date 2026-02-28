@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import Link from 'next/link'
-import { MessageSquare, Search, Star, Users, Clock, ArrowRight, Filter, Sparkles, Package, Code2, Layers } from 'lucide-react'
+import { MessageSquare, Search, Star, Users, Clock, ArrowRight, Filter, Sparkles, Package, Code2, Layers, Radio } from 'lucide-react'
 import { componentRegistry } from '@/components/docs/component-registry'
 import { businessRegistry } from '@/components/business/registry'
 
@@ -20,10 +20,19 @@ const demoConfigs = [
     featured: true,
     href: '/demo/websocket',
   },
+  {
+    id: 'openclaw-chat',
+    name: 'OpenClaw Chat',
+    description: 'OpenClaw Gateway 集成示例，SSE 心跳机制，支持多模型提供商。',
+    category: 'AI Agent',
+    icon: 'Radio',
+    featured: true,
+    href: '/demo/openclaw-chat',
+  },
 ]
 
 const categories = [...new Set(demoConfigs.map(d => d.category))]
-const iconMap: Record<string, typeof MessageSquare> = { MessageSquare }
+const iconMap: Record<string, typeof MessageSquare> = { MessageSquare, Radio }
 
 export default function ExamplesPage() {
   const [searchQuery, setSearchQuery] = useState('')
