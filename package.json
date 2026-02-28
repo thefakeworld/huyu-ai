@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "bun run mini-services/websocket-service/src/index.ts & next dev -p 3000 2>&1 | tee dev.log",
     "dev:all": "./.zscripts/mini-services-start.sh & next dev -p 3000",
-    "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
-    "build:services": "./.zscripts/mini-services-build.sh",
+    "build": "next build",
+    "build:standalone": "next build && mkdir -p .next/standalone/.next && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
     "build:gh-pages": "GITHUB_PAGES=true next build",
     "start": "bun run mini-services/websocket-service/src/index.ts & NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
     "services:install": "./.zscripts/mini-services-install.sh",
