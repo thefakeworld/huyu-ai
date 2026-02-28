@@ -6,9 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { useAppStore, demoConfigs, categories } from '@/stores/app-store'
-import { MessageSquare, Search, Star, Users, Clock, ArrowRight, Filter, Sparkles } from 'lucide-react'
+import { MessageSquare, Search, Star, Users, Clock, ArrowRight, Filter, Sparkles, Bot, Layers, Shield } from 'lucide-react'
 
-const iconMap: Record<string, typeof MessageSquare> = { MessageSquare }
+const iconMap: Record<string, typeof MessageSquare> = {
+  MessageSquare,
+  Bot,
+  Layers,
+  Shield,
+  Users
+}
 
 export function ExamplesPage() {
   const { setDemo } = useAppStore()
@@ -30,7 +36,7 @@ export function ExamplesPage() {
           <Sparkles className="w-6 h-6 text-primary" />
           <h1 className="text-3xl font-bold">案例广场</h1>
         </div>
-        <p className="text-muted-foreground text-lg">探索基于 Z.ai Scaffold 构建的精彩案例项目</p>
+        <p className="text-muted-foreground text-lg">探索 Super Z 构建的精彩案例项目</p>
       </div>
 
       {featuredDemos.length > 0 && (
