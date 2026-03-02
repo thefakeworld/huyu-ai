@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "dev": "bun run mini-services/websocket-service/src/index.ts & next dev -p 3000 2>&1 | tee dev.log",
+    "dev": "bun run mini-services/websocket-service/src/index.ts & next dev -H 0.0.0.0 -p 3000 2>&1 | tee dev.log",
     "dev:all": "./.zscripts/mini-services-start.sh & next dev -p 3000",
     "build": "next build",
     "build:standalone": "next build && mkdir -p .next/standalone/.next && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",

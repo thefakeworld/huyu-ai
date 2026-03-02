@@ -7,6 +7,7 @@ export type BusinessCategory =
   | 'auth'      // 认证组件
   | 'layout'    // 布局组件
   | 'page'      // 页面组件
+  | 'shopping'  // 购物商城组件
 
 // 业务组件属性定义
 export interface BusinessProp {
@@ -35,6 +36,7 @@ export const businessCategoryInfo: Record<BusinessCategory, { label: string; des
   auth: { label: '认证组件', description: '用户认证和授权相关组件', icon: 'Shield' },
   layout: { label: '布局组件', description: '页面布局和导航组件', icon: 'Layout' },
   page: { label: '页面组件', description: '完整的页面级别组件', icon: 'FileText' },
+  shopping: { label: '购物商城', description: '电商功能相关组件', icon: 'ShoppingCart' },
 }
 
 // 业务组件注册表
@@ -178,7 +180,86 @@ export const businessRegistry: BusinessComponentMeta[] = [
     tags: ['页面', 'WebSocket', '聊天', '实时'],
     path: '@/components/business/pages/websocket-demo',
   },
+
+  // ========== 购物商城组件 ==========
+  {
+    name: 'ShoppingPage',
+    slug: 'shopping-page',
+    category: 'shopping',
+    description: '完整的电商购物商城页面，包含商品浏览、购物车、结账等功能',
+    docs: 'ShoppingPage 是一个完整的电商解决方案，提供商品浏览、搜索、加入购物车、下单支付等全流程功能。界面现代化，用户体验流畅。',
+    props: [],
+    dependencies: ['Card', 'Button', 'Badge', 'Input', 'Tabs'],
+    tags: ['电商', '购物', '商城', '零售'],
+    path: '@/components/business/shopping/ShoppingPage',
+  },
+  {
+    name: 'ProductList',
+    slug: 'product-list',
+    category: 'shopping',
+    description: '商品列表展示组件，支持网格和列表两种视图模式',
+    docs: 'ProductList 组件用于展示多个商品，每个商品卡片包含图片、名称、价格、评分等信息，并提供加入购物车和收藏功能。',
+    props: [
+      { name: 'products', type: 'Product[]', required: true, description: '商品数据数组' },
+      { name: 'onProductClick', type: '(product: Product) => void', description: '点击商品回调' },
+      { name: 'onAddToCart', type: '(product: Product) => void', description: '添加到购物车回调' },
+      { name: 'onToggleFavorite', type: '(productId: string) => void', description: '切换收藏状态回调' },
+    ],
+    dependencies: ['Card', 'Button', 'Badge', 'Star'],
+    tags: ['电商', '商品', '列表', '网格'],
+    path: '@/components/business/shopping/ProductList',
+  },
+  {
+    name: 'ProductDetail',
+    slug: 'product-detail',
+    category: 'shopping',
+    description: '商品详情页组件，展示商品详细信息和规格选择',
+    docs: 'ProductDetail 展示单个商品的完整信息，包括多角度图片、价格、规格选项、数量调整、购买按钮等。',
+    props: [
+      { name: 'product', type: 'Product', required: true, description: '商品数据' },
+      { name: 'onAddToCart', type: '(product: Product, quantity: number, selectedSpecs?: any[]) => void', required: true, description: '添加到购物车回调' },
+      { name: 'onBuyNow', type: '(product: Product, quantity: number, selectedSpecs?: any[]) => void', required: true, description: '立即购买回调' },
+      { name: 'onToggleFavorite', type: '(productId: string) => void', required: true, description: '切换收藏状态回调' },
+      { name: 'isFavorite', type: 'boolean', required: true, description: '是否已收藏' },
+    ],
+    dependencies: ['Card', 'Button', 'Badge', 'Input', 'Star'],
+    tags: ['电商', '商品', '详情', '规格'],
+    path: '@/components/business/shopping/ProductDetail',
+  },
+  {
+    name: 'CartPage',
+    slug: 'cart-page',
+    category: 'shopping',
+    description: '购物车页面组件，管理用户选购的商品',
+    docs: 'CartPage 显示用户已添加到购物车的所有商品，支持修改数量、删除商品、全选等功能，并计算总价。',
+    props: [
+      { name: 'initialItems', type: 'CartItem[]', required: true, description: '初始购物车商品数组' },
+      { name: 'onRemoveItem', type: '(itemId: string) => void', required: true, description: '移除商品回调' },
+      { name: 'onUpdateQuantity', type: '(itemId: string, newQuantity: number) => void', required: true, description: '更新商品数量回调' },
+      { name: 'onCheckout', type: '(selectedItems: CartItem[]) => void', required: true, description: '去结算回调' },
+    ],
+    dependencies: ['Card', 'Button', 'Checkbox'],
+    tags: ['电商', '购物车', '结算', '订单'],
+    path: '@/components/business/shopping/CartPage',
+  },
+  {
+    name: 'CheckoutPage',
+    slug: 'checkout-page',
+    category: 'shopping',
+    description: '订单结算页面组件，处理收货地址、支付方式等信息',
+    docs: 'CheckoutPage 处理用户的订单结算流程，包括选择收货地址、配送方式、优惠券、支付方式等，并汇总订单金额。',
+    props: [
+      { name: 'cartItems', type: 'CartItem[]', required: true, description: '购物车商品数组' },
+      { name: 'subtotal', type: 'number', required: true, description: '商品小计' },
+      { name: 'onOrderSubmit', type: '(orderData: any) => void', required: true, description: '提交订单回调' },
+      { name: 'onBack', type: '() => void', description: '返回回调' },
+    ],
+    dependencies: ['Card', 'Button', 'Input', 'RadioGroup', 'Textarea'],
+    tags: ['电商', '结算', '订单', '支付'],
+    path: '@/components/business/shopping/CheckoutPage',
+  },
 ]
+
 
 // 工具函数：获取所有分类
 export function getBusinessCategories(): BusinessCategory[] {
